@@ -50,11 +50,11 @@ public class AuthService implements InterfaceAuthService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    @Autowired
-    private UserMapper userMapper;
+    // @Autowired
+    // private UserMapper userMapper;
 
-    @Autowired
-    private ProfileMapper profileMapper;
+    // @Autowired
+    // private ProfileMapper profileMapper;
 
     @Autowired
     private ReactionRepository reactionRepository;
@@ -76,36 +76,36 @@ public class AuthService implements InterfaceAuthService {
 
     private String uploadPath = "uploads/avatars";
 
-    @Override
-    public Mono<UserDto> getAuthUser(Principal principal) {
-        return userRepository.findByEmail(principal.getName())
-            .flatMap(user -> {
-                Flux<Review> reviewFlux = reviewRepository.findByUserId(user.getId());
-                Flux<Reaction> reactionFlux = reactionRepository.findByUserId(user.getId());
-                Flux<View> viewFlux = viewRepository.findByUserId(user.getId());
-                Mono<ProfileDto> profileMono = profileRepository.findByUserId(user.getId())
-                    .map(profileMapper::toProfileDto)
-                    .defaultIfEmpty(new ProfileDto());
+    // @Override
+    // public Mono<UserDto> getAuthUser(Principal principal) {
+    //     return userRepository.findByEmail(principal.getName())
+    //         .flatMap(user -> {
+    //             Flux<Review> reviewFlux = reviewRepository.findByUserId(user.getId());
+    //             Flux<Reaction> reactionFlux = reactionRepository.findByUserId(user.getId());
+    //             Flux<View> viewFlux = viewRepository.findByUserId(user.getId());
+    //             Mono<ProfileDto> profileMono = profileRepository.findByUserId(user.getId())
+    //                 .map(profileMapper::toProfileDto)
+    //                 .defaultIfEmpty(new ProfileDto());
 
-                return Mono.zip(reviewFlux.collectList(), reactionFlux.collectList(), viewFlux.collectList(), profileMono)
-                    .map(tuple -> {
-                        UserDto userDto = userMapper.toUserDto(user);
-                        userDto.setReviews(tuple.getT1().size());
-                        userDto.setReactions(tuple.getT2().size());
-                        userDto.setViews(tuple.getT3().size());
-                        userDto.setProfile(tuple.getT4());
+    //             return Mono.zip(reviewFlux.collectList(), reactionFlux.collectList(), viewFlux.collectList(), profileMono)
+    //                 .map(tuple -> {
+    //                     UserDto userDto = userMapper.toUserDto(user);
+    //                     userDto.setReviews(tuple.getT1().size());
+    //                     userDto.setReactions(tuple.getT2().size());
+    //                     userDto.setViews(tuple.getT3().size());
+    //                     userDto.setProfile(tuple.getT4());
 
-                        return userDto;
-                    });
-            })
-            .switchIfEmpty(Mono.error(
-                new CustomWebExchangeBindException(
-                    principal.getName(), 
-                    "auth", 
-                    "Parece que el usuario autenticado no se encuentra en el sistema. Te recomendamos cerrar sesión y volver a ingresar."
-                ).getWebExchangeBindException()
-            ));
-    }
+    //                     return userDto;
+    //                 });
+    //         })
+    //         .switchIfEmpty(Mono.error(
+    //             new CustomWebExchangeBindException(
+    //                 principal.getName(), 
+    //                 "auth", 
+    //                 "Parece que el usuario autenticado no se encuentra en el sistema. Te recomendamos cerrar sesión y volver a ingresar."
+    //             ).getWebExchangeBindException()
+    //         ));
+    // }
 
     @Override
     public Mono<TokenDto> login(LoginUserDto loginUserDto) {
@@ -130,34 +130,34 @@ public class AuthService implements InterfaceAuthService {
             
     }
 
-    @Override
-    public Mono<Object> register(RegisterUserDto registerUserDto) {
-        if (!registerUserDto.getPassword().equals(registerUserDto.getConfirmPassword())) {
-            return Mono.error(new CustomWebExchangeBindException(
-                registerUserDto, 
-                "confirmPassword", 
-                "La confirmación de la contraseña no coincide con la contraseña original. Por favor, revísalo e inténtalo de nuevo."
-            ).getWebExchangeBindException());
-        }
+    // @Override
+    // public Mono<Object> register(RegisterUserDto registerUserDto) {
+    //     if (!registerUserDto.getPassword().equals(registerUserDto.getConfirmPassword())) {
+    //         return Mono.error(new CustomWebExchangeBindException(
+    //             registerUserDto, 
+    //             "confirmPassword", 
+    //             "La confirmación de la contraseña no coincide con la contraseña original. Por favor, revísalo e inténtalo de nuevo."
+    //         ).getWebExchangeBindException());
+    //     }
 
-        return userRepository.findByEmail(registerUserDto.getEmail())
-            .flatMap(existingUser -> Mono.error(
-                new CustomWebExchangeBindException(
-                    registerUserDto.getEmail(), 
-                    "email", 
-                    "El email que intentas registrar ya está asociado a otra cuenta. Por favor, intenta con un correo electrónico diferente."
-                ).getWebExchangeBindException()
-            ))
-            .switchIfEmpty(Mono.defer(() -> {
-                User user = userMapper.toUser(registerUserDto);
-                user.setPassword(passwordEncoder.encode(user.getPassword()));
-                user.setRoles(Arrays.asList(Roles.PREFIX + Roles.USER));
+    //     return userRepository.findByEmail(registerUserDto.getEmail())
+    //         .flatMap(existingUser -> Mono.error(
+    //             new CustomWebExchangeBindException(
+    //                 registerUserDto.getEmail(), 
+    //                 "email", 
+    //                 "El email que intentas registrar ya está asociado a otra cuenta. Por favor, intenta con un correo electrónico diferente."
+    //             ).getWebExchangeBindException()
+    //         ))
+    //         .switchIfEmpty(Mono.defer(() -> {
+    //             User user = userMapper.toUser(registerUserDto);
+    //             user.setPassword(passwordEncoder.encode(user.getPassword()));
+    //             user.setRoles(Arrays.asList(Roles.PREFIX + Roles.USER));
 
-                return userRepository.save(user)
-                    .map(savedUser -> userMapper.toUserDto(savedUser));
+    //             return userRepository.save(user)
+    //                 .map(savedUser -> userMapper.toUserDto(savedUser));
 
-            }));
-    }
+    //         }));
+    // }
 
     @Override
     public Mono<TokenDto> updatePassword(Principal principal, UpdateAuthPasswordDto updateAuthPasswordDto) {
@@ -193,24 +193,24 @@ public class AuthService implements InterfaceAuthService {
             );
     }
 
-    public Mono<UserDto> updateProfile(Principal principal, UpdateProfileDto updateProfileDto) {
-        return userRepository.findByEmail(principal.getName())
-            .flatMap(user -> {
-                user.setAcademicLevel(updateProfileDto.getAcademicLevel());
-                user.setSex(updateProfileDto.getSex());
-                user.setBirthdate(updateProfileDto.getBirthdate());
+    // public Mono<UserDto> updateProfile(Principal principal, UpdateProfileDto updateProfileDto) {
+    //     return userRepository.findByEmail(principal.getName())
+    //         .flatMap(user -> {
+    //             user.setAcademicLevel(updateProfileDto.getAcademicLevel());
+    //             user.setSex(updateProfileDto.getSex());
+    //             user.setBirthdate(updateProfileDto.getBirthdate());
 
-                return userRepository.save(user)
-                    .map(userMapper::toUserDto);
-            })
-            .switchIfEmpty(Mono.error(
-                new CustomWebExchangeBindException(
-                    updateProfileDto,
-                    "auth", 
-                    "El correo electrónico o la contraseña proporcionados son incorrectos. Por favor, verifica tus credenciales e intenta nuevamente."
-                ).getWebExchangeBindException())
-            );
-    }
+    //             return userRepository.save(user)
+    //                 .map(userMapper::toUserDto);
+    //         })
+    //         .switchIfEmpty(Mono.error(
+    //             new CustomWebExchangeBindException(
+    //                 updateProfileDto,
+    //                 "auth", 
+    //                 "El correo electrónico o la contraseña proporcionados son incorrectos. Por favor, verifica tus credenciales e intenta nuevamente."
+    //             ).getWebExchangeBindException())
+    //         );
+    // }
 
     @Override
     public Mono<TokenDto> subscribe(Principal principal) {
@@ -231,77 +231,77 @@ public class AuthService implements InterfaceAuthService {
             });
     }
 
-    @Override
-    public Mono<Object> registerSubscriptor(RegisterSubscriptorDto registerSubscriptorDto) {
-        if (!registerSubscriptorDto.getPassword().equals(registerSubscriptorDto.getConfirmPassword())) {
-            return Mono.error(new CustomWebExchangeBindException(
-                registerSubscriptorDto, 
-                "confirmPassword", 
-                "La confirmación de la contraseña no coincide con la contraseña original."
-            ).getWebExchangeBindException());
-        }
+    // @Override
+    // public Mono<Object> registerSubscriptor(RegisterSubscriptorDto registerSubscriptorDto) {
+    //     if (!registerSubscriptorDto.getPassword().equals(registerSubscriptorDto.getConfirmPassword())) {
+    //         return Mono.error(new CustomWebExchangeBindException(
+    //             registerSubscriptorDto, 
+    //             "confirmPassword", 
+    //             "La confirmación de la contraseña no coincide con la contraseña original."
+    //         ).getWebExchangeBindException());
+    //     }
 
-        return userRepository.findByEmail(registerSubscriptorDto.getEmail())
-            .flatMap(existingUser -> Mono.error(
-                new CustomWebExchangeBindException(
-                    registerSubscriptorDto.getEmail(), 
-                    "email", 
-                    "El email que intentas registrar ya está asociado a otra cuenta."
-                ).getWebExchangeBindException()
-            ))
-            .switchIfEmpty(Mono.defer(() -> {
-                User user = userMapper.toUser(registerSubscriptorDto);
-                user.setPassword(passwordEncoder.encode(user.getPassword()));
-                user.setRoles(Arrays.asList(Roles.PREFIX + Roles.SUBSCRIBER));
+    //     return userRepository.findByEmail(registerSubscriptorDto.getEmail())
+    //         .flatMap(existingUser -> Mono.error(
+    //             new CustomWebExchangeBindException(
+    //                 registerSubscriptorDto.getEmail(), 
+    //                 "email", 
+    //                 "El email que intentas registrar ya está asociado a otra cuenta."
+    //             ).getWebExchangeBindException()
+    //         ))
+    //         .switchIfEmpty(Mono.defer(() -> {
+    //             User user = userMapper.toUser(registerSubscriptorDto);
+    //             user.setPassword(passwordEncoder.encode(user.getPassword()));
+    //             user.setRoles(Arrays.asList(Roles.PREFIX + Roles.SUBSCRIBER));
 
-                return userRepository.save(user)
-                    .flatMap(savedUser -> {
-                        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                            savedUser.getEmail(), 
-                            savedUser.getPassword(), 
-                            savedUser.getRoles().stream().map(SimpleGrantedAuthority::new).toList()
-                        );
+    //             return userRepository.save(user)
+    //                 .flatMap(savedUser -> {
+    //                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+    //                         savedUser.getEmail(), 
+    //                         savedUser.getPassword(), 
+    //                         savedUser.getRoles().stream().map(SimpleGrantedAuthority::new).toList()
+    //                     );
 
-                        return reactiveAuthenticationManager.authenticate(authenticationToken)
-                            .map(auth -> new TokenDto(jwtUtil.create(auth)));
-                    });
-            }));
-    }
+    //                     return reactiveAuthenticationManager.authenticate(authenticationToken)
+    //                         .map(auth -> new TokenDto(jwtUtil.create(auth)));
+    //                 });
+    //         }));
+    // }
 
-    @Override
-    public Mono<UserDto> updloadAvatar(Principal principal, FilePart image, String baseUrl) {
-       return userRepository.findByEmail(principal.getName())
-            .flatMap(user -> {
-                String filename = UUID.randomUUID() + "-" + image.filename();
-                Path uploadDir = Paths.get(uploadPath).toAbsolutePath().normalize();
-                Path filePath = uploadDir.resolve(filename);
+    // @Override
+    // public Mono<UserDto> updloadAvatar(Principal principal, FilePart image, String baseUrl) {
+    //    return userRepository.findByEmail(principal.getName())
+    //         .flatMap(user -> {
+    //             String filename = UUID.randomUUID() + "-" + image.filename();
+    //             Path uploadDir = Paths.get(uploadPath).toAbsolutePath().normalize();
+    //             Path filePath = uploadDir.resolve(filename);
 
-                if (user.getImage() != null) {
-                    Path oldFilePath = Paths.get(uploadDir.toString(), user.getImage().substring(user.getImage().lastIndexOf("/") + 1));
-                    try {
-                        Files.deleteIfExists(oldFilePath);
-                    } catch (Exception e) {
-                        return Mono.error(new RuntimeException("Error al eliminar la imagen antigua: " + e.getMessage()));
-                    }
-                }
+    //             if (user.getImage() != null) {
+    //                 Path oldFilePath = Paths.get(uploadDir.toString(), user.getImage().substring(user.getImage().lastIndexOf("/") + 1));
+    //                 try {
+    //                     Files.deleteIfExists(oldFilePath);
+    //                 } catch (Exception e) {
+    //                     return Mono.error(new RuntimeException("Error al eliminar la imagen antigua: " + e.getMessage()));
+    //                 }
+    //             }
 
-                return Mono.fromCallable(() -> {
-                    Files.createDirectories(uploadDir);
-                    return filePath;
-                })
-                    .flatMap(path -> image.transferTo(path))
-                    .then(Mono.defer(() -> {
-                        user.setImage(baseUrl + "/" + uploadPath + "/" + filename);
-                        return userRepository.save(user)
-                            .map(userMapper::toUserDto);
-                    }));
-            })
-            .switchIfEmpty(Mono.error(
-                new CustomWebExchangeBindException(
-                    principal.getName(), 
-                    "auth", 
-                    "Parece que el usuario autenticado no se encuentra en el sistema. Te recomendamos cerrar sesión y volver a ingresar."
-                ).getWebExchangeBindException()
-            ));
-    }
+    //             return Mono.fromCallable(() -> {
+    //                 Files.createDirectories(uploadDir);
+    //                 return filePath;
+    //             })
+    //                 .flatMap(path -> image.transferTo(path))
+    //                 .then(Mono.defer(() -> {
+    //                     user.setImage(baseUrl + "/" + uploadPath + "/" + filename);
+    //                     return userRepository.save(user)
+    //                         .map(userMapper::toUserDto);
+    //                 }));
+    //         })
+    //         .switchIfEmpty(Mono.error(
+    //             new CustomWebExchangeBindException(
+    //                 principal.getName(), 
+    //                 "auth", 
+    //                 "Parece que el usuario autenticado no se encuentra en el sistema. Te recomendamos cerrar sesión y volver a ingresar."
+    //             ).getWebExchangeBindException()
+    //         ));
+    // }
 }

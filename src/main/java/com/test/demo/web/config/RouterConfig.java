@@ -38,6 +38,7 @@ public class RouterConfig {
     ) {
         return RouterFunctions.route()
             .path("/auth", () -> authRoutes(authController))
+            .GET("/", request -> ServerResponse.ok().bodyValue("Hola desde Spring WebFlux!"))
             // .path("/categories", () -> categoryRoutes(categoryController))
             // .path("/contents", () -> contentRoutes(contentController))
             // .path("/courses", () -> courseRoutes(courseController))
@@ -231,10 +232,10 @@ public class RouterConfig {
     //         .build();
     // }
 
-    // @Bean
-    // AuthController authController() {
-    //     return new AuthController();
-    // }
+    @Bean
+    AuthController authController() {
+        return new AuthController();
+    }
 
     // @Bean
     // CategoryController categoryController() {

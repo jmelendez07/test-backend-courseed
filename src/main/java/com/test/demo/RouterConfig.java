@@ -12,7 +12,7 @@ public class RouterConfig {
     @Bean
     public RouterFunction<ServerResponse> routes() {
         return RouterFunctions.route()
-            .GET("/hello", request -> ServerResponse.ok().bodyValue("Hola desde Spring WebFlux!"))
+            .GET("/", request -> ServerResponse.ok().bodyValue("Hola desde Spring WebFlux!"))
             .GET("/health", request -> ServerResponse.ok().bodyValue("OK"))
             .build();
     }

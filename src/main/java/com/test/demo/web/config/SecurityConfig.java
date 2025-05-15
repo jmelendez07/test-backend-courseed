@@ -72,7 +72,7 @@ public class SecurityConfig {
                     .pathMatchers(HttpMethod.POST, "/predictions/form-prediction").permitAll()
                     .pathMatchers(HttpMethod.GET, "/predictions/user-course-recomended", "/predictions/courses-recomended-for-user", "/predictions/form-prediction").permitAll()
                     .pathMatchers(HttpMethod.GET, "/uploads/**").permitAll()
-                    .pathMatchers(HttpMethod.GET, "/hello").permitAll()
+                    .pathMatchers(HttpMethod.GET, "/").permitAll()
                     .pathMatchers(HttpMethod.GET, "/health").permitAll()
                     .anyExchange().authenticated())
                 .addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION);

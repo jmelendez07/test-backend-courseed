@@ -8,8 +8,8 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import com.test.demo.web.controllers.AuthController;
-// import com.test.demo.web.controllers.CategoryController;
-// import com.test.demo.web.controllers.ContentController;
+import com.test.demo.web.controllers.CategoryController;
+import com.test.demo.web.controllers.ContentController;
 // import com.test.demo.web.controllers.CourseController;
 // import com.test.demo.web.controllers.InstitutionController;
 // import com.test.demo.web.controllers.PredictionController;
@@ -27,8 +27,8 @@ public class RouterConfig {
 
     @Bean
     RouterFunction<ServerResponse> routes(
-        AuthController authController//, CategoryController categoryController,
-        // ContentController contentController, CourseController courseController,
+        AuthController authController, CategoryController categoryController,
+        ContentController contentController//,  CourseController courseController,
         // InstitutionController institutionController, ViewController viewController,
         // ReviewController reviewController, UserController userController,
         // RoleController roleController, ReactionController reactionController,
@@ -39,8 +39,8 @@ public class RouterConfig {
         return RouterFunctions.route()
             .path("/auth", () -> authRoutes(authController))
             .GET("/", request -> ServerResponse.ok().bodyValue("Hola desde Spring WebFlux!"))
-            // .path("/categories", () -> categoryRoutes(categoryController))
-            // .path("/contents", () -> contentRoutes(contentController))
+            .path("/categories", () -> categoryRoutes(categoryController))
+            .path("/contents", () -> contentRoutes(contentController))
             // .path("/courses", () -> courseRoutes(courseController))
             // .path("/institutions", () -> institutionRoutes(institutionController))
             // .path("/reviews", () -> reviewRoutes(reviewController))
@@ -69,26 +69,26 @@ public class RouterConfig {
             .build();
     }
 
-    // private RouterFunction<ServerResponse> categoryRoutes(CategoryController categoryController) {
-    //     return RouterFunctions
-    //         .route()
-    //         .GET("", categoryController::getAllCategories)
-    //         .GET("/{id}", categoryController::getCategoryById)
-    //         .GET("/name/{name}", categoryController::getCategoryByName)
-    //         .DELETE("/{id}", categoryController::deleteCategory)
-    //         .build();
-    // }
+    private RouterFunction<ServerResponse> categoryRoutes(CategoryController categoryController) {
+        return RouterFunctions
+            .route()
+            .GET("", categoryController::getAllCategories)
+            .GET("/{id}", categoryController::getCategoryById)
+            .GET("/name/{name}", categoryController::getCategoryByName)
+            .DELETE("/{id}", categoryController::deleteCategory)
+            .build();
+    }
 
-    // private RouterFunction<ServerResponse> contentRoutes(ContentController contentController) {
-    //     return RouterFunctions
-    //         .route()
-    //         .GET("/{id}", contentController::getContentById)
-    //         .GET("/course/{courseId}", contentController::getContentByCourseId)
-    //         .POST(contentController::createContent)
-    //         .PUT("/{id}", contentController::updateContent)
-    //         .DELETE("/{id}", contentController::deleteContent)
-    //         .build();
-    // }
+    private RouterFunction<ServerResponse> contentRoutes(ContentController contentController) {
+        return RouterFunctions
+            .route()
+            .GET("/{id}", contentController::getContentById)
+            .GET("/course/{courseId}", contentController::getContentByCourseId)
+            .POST(contentController::createContent)
+            .PUT("/{id}", contentController::updateContent)
+            .DELETE("/{id}", contentController::deleteContent)
+            .build();
+    }
 
     // private RouterFunction<ServerResponse> courseRoutes(CourseController courseController) {
     //     return RouterFunctions
@@ -237,15 +237,15 @@ public class RouterConfig {
         return new AuthController();
     }
 
-    // @Bean
-    // CategoryController categoryController() {
-    //     return new CategoryController();
-    // }
+    @Bean
+    CategoryController categoryController() {
+        return new CategoryController();
+    }
 
-    // @Bean
-    // ContentController contentController() {
-    //     return new ContentController();
-    // }
+    @Bean
+    ContentController contentController() {
+        return new ContentController();
+    }
 
     // @Bean
     // CourseController courseController() {

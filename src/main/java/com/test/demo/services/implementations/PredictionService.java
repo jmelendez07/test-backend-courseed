@@ -132,19 +132,19 @@ public class PredictionService implements InterfacePredictionService {
         this.contentMapper = contentMapper;
         this.reactionMapper = reactionMapper;
 
-        try {
-            // Cargar el modelo desde el classpath
-            ClassPathResource modelResource = new ClassPathResource("j48modelCourseed.model");
-            classifier = (Classifier) weka.core.SerializationHelper.read(modelResource.getInputStream());
+        // try {
+        //     // Cargar el modelo desde el classpath
+        //     ClassPathResource modelResource = new ClassPathResource("naiveBayesModelCourseed.model");
+        //     classifier = (Classifier) weka.core.SerializationHelper.read(modelResource.getInputStream());
 
-            // Cargar el archivo ARFF desde el classpath
-            ClassPathResource arffResource = new ClassPathResource("CourseedUsers.user_course_dataset.arff");
-            DataSource source = new DataSource(arffResource.getInputStream());
-            dataStructure = source.getDataSet();
-            dataStructure.setClassIndex(dataStructure.numAttributes() - 1);
-        } catch (Exception e) {
-            throw new RuntimeException("Error al cargar los recursos necesarios para PredictionService", e);
-        }   
+        //     // Cargar el archivo ARFF desde el classpath
+        //     ClassPathResource arffResource = new ClassPathResource("CourseedUsers.user_course_dataset.arff");
+        //     DataSource source = new DataSource(arffResource.getInputStream());
+        //     dataStructure = source.getDataSet();
+        //     dataStructure.setClassIndex(dataStructure.numAttributes() - 1);
+        // } catch (Exception e) {
+        //     throw new RuntimeException("Error al cargar los recursos necesarios para PredictionService", e);
+        // }   
     }
 
     public Mono<UserCourseRecomended> getUserCourseRecomended(String userId, String courseId) {

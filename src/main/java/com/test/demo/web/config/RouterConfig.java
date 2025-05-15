@@ -12,7 +12,7 @@ import com.test.demo.web.controllers.CategoryController;
 import com.test.demo.web.controllers.ContentController;
 import com.test.demo.web.controllers.CourseController;
 import com.test.demo.web.controllers.InstitutionController;
-// import com.test.demo.web.controllers.PredictionController;
+import com.test.demo.web.controllers.PredictionController;
 import com.test.demo.web.controllers.ProfileController;
 import com.test.demo.web.controllers.ReactionController;
 import com.test.demo.web.controllers.ReviewController;
@@ -33,8 +33,7 @@ public class RouterConfig {
         ReviewController reviewController, UserController userController,
         RoleController roleController, ReactionController reactionController,
         SearchHistoryController searchHistoryController, SubscriptionController subscriptionController,
-        ProfileController profileController
-        // PredictionController predictionController
+        ProfileController profileController, PredictionController predictionController
     ) {
         return RouterFunctions.route()
             .path("/auth", () -> authRoutes(authController))
@@ -51,7 +50,7 @@ public class RouterConfig {
             .path("/search-histories", () -> searchHistoryRoutes(searchHistoryController))
             .path("/subscriptions", () -> subscriptionRoutes(subscriptionController))
             .path("/profiles", () -> profileRoutes(profileController))
-            // .path("/predictions", () -> predictionRoutes(predictionController))
+            .path("/predictions", () -> predictionRoutes(predictionController))
             .build();
     }
 
@@ -218,19 +217,19 @@ public class RouterConfig {
             .build();
     }
 
-    // private RouterFunction<ServerResponse> predictionRoutes(PredictionController predictionController) {
-    //     return RouterFunctions
-    //         .route()
-    //         .GET("/user-course-recomended", predictionController::getUserCourseRecomended)
-    //         .GET("/courses-recomended-for-user", predictionController::getRecomendedCoursesByUser)
-    //         .GET("/total-courses-recomended", predictionController::getTotalCoursesRecomended)
-    //         .GET("/courses-recomended/auth", predictionController::getRecomendedCoursesByAuth)
-    //         .GET("/courses-recomended/history/auth", predictionController::getRecomendedCoursesByHistoryAndAuth)
-    //         .GET("/users-recomended/course/{courseId}", predictionController::getRecomendedUsersByCourse)
-    //         .GET("/courses", predictionController::getAllCoursesWithAvgConfidence)
-    //         .POST("/form-prediction", predictionController::predictCourseRecommendation)
-    //         .build();
-    // }
+    private RouterFunction<ServerResponse> predictionRoutes(PredictionController predictionController) {
+        return RouterFunctions
+            .route()
+            .GET("/user-course-recomended", predictionController::getUserCourseRecomended)
+            .GET("/courses-recomended-for-user", predictionController::getRecomendedCoursesByUser)
+            .GET("/total-courses-recomended", predictionController::getTotalCoursesRecomended)
+            .GET("/courses-recomended/auth", predictionController::getRecomendedCoursesByAuth)
+            .GET("/courses-recomended/history/auth", predictionController::getRecomendedCoursesByHistoryAndAuth)
+            .GET("/users-recomended/course/{courseId}", predictionController::getRecomendedUsersByCourse)
+            .GET("/courses", predictionController::getAllCoursesWithAvgConfidence)
+            .POST("/form-prediction", predictionController::predictCourseRecommendation)
+            .build();
+    }
 
     @Bean
     AuthController authController() {
@@ -297,8 +296,8 @@ public class RouterConfig {
         return new ProfileController();
     }
 
-    // @Bean
-    // PredictionController predictionController() {
-    //     return new PredictionController();
-    // }
+    @Bean
+    PredictionController predictionController() {
+        return new PredictionController();
+    }
 }

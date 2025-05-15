@@ -50,8 +50,8 @@ public class AuthService implements InterfaceAuthService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    // @Autowired
-    // private UserMapper userMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     // @Autowired
     // private ProfileMapper profileMapper;

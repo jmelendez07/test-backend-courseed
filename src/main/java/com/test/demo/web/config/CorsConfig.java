@@ -2,6 +2,7 @@ package com.test.demo.web.config;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -11,8 +12,8 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 @Configuration
 public class CorsConfig {
 
-    // @Value("${VITE_BASE_URL}")
-    private String viteBaseUrl = "https://courseed.up.railway.app/";
+    @Value("${FRONTEND_URL}")
+    private String viteBaseUrl;
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

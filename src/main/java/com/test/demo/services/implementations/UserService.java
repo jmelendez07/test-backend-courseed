@@ -251,7 +251,8 @@ public class UserService implements InterfaceUserService {
                     user.setEmail(updateUserEmailDto.getEmail());
 
                     return userRepository.save(user)
-                        .map(userMapper::toUserDto);
+                        .map(userMapper::toUserDto)
+                        .cast(Object.class);
                 }))
             )
             .switchIfEmpty(Mono.error(

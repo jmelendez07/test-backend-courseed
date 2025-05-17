@@ -7,6 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DemoApplication {
 
 	public static void main(String[] args) {
+		System.getenv("MONGODB_URI");
+		System.getenv("MONGODB_DB");
+		System.getenv("PAYU_API_KEY");
+		System.getenv("PAYU_MERCHANT_ID");
+		System.getenv("FRONTEND_URL");
+
 		SpringApplication.run(DemoApplication.class, args);
 	}
 

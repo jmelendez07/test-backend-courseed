@@ -143,7 +143,7 @@ public class CourseController {
                     }
                 }
 
-                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost() + ":" + serverRequest.uri().getPort();
+                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost();
 
                 return Mono.just(saveCourseDto)
                     .doOnNext(validationService::validate)
@@ -182,7 +182,7 @@ public class CourseController {
                     }
                 }
 
-                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost() + ":" + serverRequest.uri().getPort();
+                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost();
 
                 return Mono.just(saveCourseDto)
                     .doOnNext(validationService::validate)

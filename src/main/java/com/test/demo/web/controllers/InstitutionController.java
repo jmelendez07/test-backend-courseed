@@ -77,7 +77,7 @@ public class InstitutionController {
                     }
                 }
 
-                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost() + ":" + serverRequest.uri().getPort();
+                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost();
 
                 return serverRequest.principal()
                     .flatMap(principal -> institutionService.createInstitution(principal, saveInstitutionDto, baseUrl)
@@ -108,7 +108,7 @@ public class InstitutionController {
                     }
                 }
     
-                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost() + ":" + serverRequest.uri().getPort();
+                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost();
     
                 return serverRequest.principal()
                     .flatMap(principal -> institutionService.updateInstitution(serverRequest.pathVariable("id"), principal, saveInstitutionDto, baseUrl)

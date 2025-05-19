@@ -95,7 +95,7 @@ public class AuthController {
             .flatMap(parts -> {
                 FilePart imagePart = (FilePart) parts.getFirst("image");
                 
-                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost() + ":" + serverRequest.uri().getPort();
+                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost();
 
                 if (imagePart == null || imagePart.filename() == null || imagePart.filename().isBlank()) {
                     return ServerResponse.badRequest().bodyValue("Para proceder, debes completar el campo correspondiente a la imagen.");

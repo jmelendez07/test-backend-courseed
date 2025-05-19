@@ -1,7 +1,6 @@
 package com.test.demo.web.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.http.codec.multipart.FormFieldPart;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -16,9 +15,6 @@ public class InstitutionController {
 
     @Autowired
     private InstitutionService institutionService;
-
-    @Value("${spring.webflux.base-path:}")
-    private String basePath;
 
     public Mono<ServerResponse> getAllInstitutions(ServerRequest serverRequest) {
         return institutionService
@@ -81,9 +77,7 @@ public class InstitutionController {
                     }
                 }
 
-                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost() + 
-                    ((serverRequest.uri().getPort() != -1 ? ":" + serverRequest.uri().getPort() : "") +
-                    (basePath != null && !basePath.isBlank() ? basePath : ""));
+                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost() + ":" + serverRequest.uri().getPort();
 
                 return serverRequest.principal()
                     .flatMap(principal -> institutionService.createInstitution(principal, saveInstitutionDto, baseUrl)
@@ -114,9 +108,7 @@ public class InstitutionController {
                     }
                 }
     
-                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost() + 
-                    ((serverRequest.uri().getPort() != -1 ? ":" + serverRequest.uri().getPort() : "") +
-                    (basePath != null && !basePath.isBlank() ? basePath : ""));
+                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost() + ":" + serverRequest.uri().getPort();
     
                 return serverRequest.principal()
                     .flatMap(principal -> institutionService.updateInstitution(serverRequest.pathVariable("id"), principal, saveInstitutionDto, baseUrl)

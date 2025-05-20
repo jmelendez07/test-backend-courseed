@@ -376,18 +376,18 @@ public class PredictionService implements InterfacePredictionService {
 
                                             if (prediction.equals("true")) {
                                                 PredictionDataDto predictionDto = new PredictionDataDto();
-                                                predictionDto.setUserInterest(instance.stringValue(0));
-                                                predictionDto.setUserAvailableTime(instance.value(1));
-                                                predictionDto.setBudget((int) instance.value(2));
-                                                predictionDto.setPlatformPreference(instance.stringValue(3));
-                                                predictionDto.setCourseModality(instance.stringValue(4));
-                                                predictionDto.setCourseDuration((int) instance.value(5));
-                                                predictionDto.setCoursePrice(instance.value(6));
-                                                predictionDto.setCourseCategory(instance.stringValue(7));
-                                                predictionDto.setCourseRatingAvg(instance.value(8));
-                                                predictionDto.setCourseMaxReaction(instance.stringValue(9));
-                                                predictionDto.setCourseVisits((int) instance.value(10));
-                                                predictionDto.setCourseReviewsCount((int) instance.value(11));
+                                                predictionDto.setUserInterest(profile.getInterest());
+                                                predictionDto.setUserAvailableTime(Double.valueOf(profile.getAvailableHoursTime()));
+                                                predictionDto.setBudget(profile.getBudget().intValue());
+                                                predictionDto.setPlatformPreference(profile.getPlatformPrefered());
+                                                predictionDto.setCourseModality(course.getModality());
+                                                predictionDto.setCourseDuration(Integer.parseInt(course.getDuration()));
+                                                predictionDto.setCoursePrice(course.getPrice());
+                                                predictionDto.setCourseCategory(category.getName());
+                                                predictionDto.setCourseRatingAvg(tuple.getT1());
+                                                predictionDto.setCourseMaxReaction(tuple.getT2());
+                                                predictionDto.setCourseVisits(tuple.getT3().intValue());
+                                                predictionDto.setCourseReviewsCount(tuple.getT4().intValue());
                                                 predictionDto.setCourseRecomended(prediction.equals("true"));
                                                 predictionDto.setConfidence(confidencePercentage);
 
@@ -495,18 +495,18 @@ public class PredictionService implements InterfacePredictionService {
 
                                                     if (prediction.equals("true")) {
                                                         PredictionDataDto predictionDto = new PredictionDataDto();
-                                                        predictionDto.setUserInterest(instance.stringValue(0));
-                                                        predictionDto.setUserAvailableTime(instance.value(1));
-                                                        predictionDto.setBudget((int) instance.value(2));
-                                                        predictionDto.setPlatformPreference(instance.stringValue(3));
-                                                        predictionDto.setCourseModality(instance.stringValue(4));
-                                                        predictionDto.setCourseDuration((int) instance.value(5));
-                                                        predictionDto.setCoursePrice(instance.value(6));
-                                                        predictionDto.setCourseCategory(instance.stringValue(7));
-                                                        predictionDto.setCourseRatingAvg(instance.value(8));
-                                                        predictionDto.setCourseMaxReaction(instance.stringValue(9));
-                                                        predictionDto.setCourseVisits((int) instance.value(10));
-                                                        predictionDto.setCourseReviewsCount((int) instance.value(11));
+                                                        predictionDto.setUserInterest(profile.getInterest());
+                                                        predictionDto.setUserAvailableTime(Double.valueOf(profile.getAvailableHoursTime()));
+                                                        predictionDto.setBudget(profile.getBudget().intValue());
+                                                        predictionDto.setPlatformPreference(profile.getPlatformPrefered());
+                                                        predictionDto.setCourseModality(course.getModality());
+                                                        predictionDto.setCourseDuration(Integer.parseInt(course.getDuration()));
+                                                        predictionDto.setCoursePrice(course.getPrice());
+                                                        predictionDto.setCourseCategory(category.getName());
+                                                        predictionDto.setCourseRatingAvg(tuple.getT1());
+                                                        predictionDto.setCourseMaxReaction(tuple.getT2());
+                                                        predictionDto.setCourseVisits(tuple.getT3().intValue());
+                                                        predictionDto.setCourseReviewsCount(tuple.getT4().intValue());
                                                         predictionDto.setCourseRecomended(prediction.equals("true"));
                                                         predictionDto.setConfidence(confidencePercentage);
 
@@ -594,18 +594,18 @@ public class PredictionService implements InterfacePredictionService {
 
                                             if (prediction.equals("true")) {
                                                 PredictionDataDto predictionDto = new PredictionDataDto();
-                                                predictionDto.setUserInterest(instance.stringValue(0));
-                                                predictionDto.setUserAvailableTime(instance.value(1));
-                                                predictionDto.setBudget((int) instance.value(2));
-                                                predictionDto.setPlatformPreference(instance.stringValue(3));
-                                                predictionDto.setCourseModality(instance.stringValue(4));
-                                                predictionDto.setCourseDuration((int) instance.value(5));
-                                                predictionDto.setCoursePrice(instance.value(6));
-                                                predictionDto.setCourseCategory(instance.stringValue(7));
-                                                predictionDto.setCourseRatingAvg(instance.value(8));
-                                                predictionDto.setCourseMaxReaction(instance.stringValue(9));
-                                                predictionDto.setCourseVisits((int) instance.value(10));
-                                                predictionDto.setCourseReviewsCount((int) instance.value(11));
+                                                predictionDto.setUserInterest(profile.getInterest());
+                                                predictionDto.setUserAvailableTime(Double.valueOf(profile.getAvailableHoursTime()));
+                                                predictionDto.setBudget(profile.getBudget().intValue());
+                                                predictionDto.setPlatformPreference(profile.getPlatformPrefered());
+                                                predictionDto.setCourseModality(course.getModality());
+                                                predictionDto.setCourseDuration(Integer.parseInt(course.getDuration()));
+                                                predictionDto.setCoursePrice(course.getPrice());
+                                                predictionDto.setCourseCategory(category.getName());
+                                                predictionDto.setCourseRatingAvg(tuple.getT1());
+                                                predictionDto.setCourseMaxReaction(tuple.getT2());
+                                                predictionDto.setCourseVisits(tuple.getT3().intValue());
+                                                predictionDto.setCourseReviewsCount(tuple.getT4().intValue());
                                                 predictionDto.setCourseRecomended(prediction.equals("true"));
                                                 predictionDto.setConfidence(confidencePercentage);
 

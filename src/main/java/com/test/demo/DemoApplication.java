@@ -12,6 +12,7 @@ public class DemoApplication {
 		System.getenv("PAYU_API_KEY");
 		System.getenv("PAYU_MERCHANT_ID");
 		System.getenv("FRONTEND_URL");
+		System.getenv("PAYU_URL");
 
 		SpringApplication.run(DemoApplication.class, args);
 	}

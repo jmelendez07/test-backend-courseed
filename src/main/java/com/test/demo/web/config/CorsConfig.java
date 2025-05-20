@@ -14,12 +14,15 @@ public class CorsConfig {
 
     @Value("${FRONTEND_URL}")
     private String viteBaseUrl;
+    
+    @Value("${PAYU_URL}")
+    private String payuUrl;
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        corsConfiguration.setAllowedOrigins(Arrays.asList(viteBaseUrl));
+        corsConfiguration.setAllowedOrigins(Arrays.asList(viteBaseUrl, payuUrl));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
 

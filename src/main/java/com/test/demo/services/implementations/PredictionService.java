@@ -405,7 +405,7 @@ public class PredictionService implements InterfacePredictionService {
                                                 return Mono.empty();
                                             }
                                         } catch (Exception e) {
-                                            System.out.println("URL CURSO: " + course.getUrl());
+                                            e.printStackTrace();
                                             return Mono.empty();
                                         }
                                     });

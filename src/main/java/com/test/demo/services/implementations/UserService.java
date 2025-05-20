@@ -59,12 +59,6 @@ public class UserService implements InterfaceUserService {
     @Autowired    
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private CategoryService categoryService;
-
-    @Autowired
-    private CourseService courseService;
-
     @Override
     public Mono<TotalUsersDto> getTotalUsers() {
         LocalDateTime now = LocalDateTime.now();
@@ -82,12 +76,7 @@ public class UserService implements InterfaceUserService {
         return userRepository.findAll()
             .flatMap(user -> profileRepository.findByUserId(user.getId())
                 .flatMap(profile -> {
-                    String interestStandarized = categoryService.standarizeCategory(interest);
-                    String modalityStandarized = courseService.standarizeModality(modality);
-                    String profileInterestStandarized = categoryService.standarizeCategory(profile.getInterest());
-                    String profileModalityStandarized = courseService.standarizeModality(profile.getPlatformPreference());
-
-                    if (interestStandarized.equals(profileInterestStandarized) || modalityStandarized.equals(profileModalityStandarized)) {
+                    if (interest.equals(profile.getInterest()) || modality.equals(profile.getPlatformPreference())) {
                         return Mono.just(user.getId());
                     } else {
                         return Mono.empty();

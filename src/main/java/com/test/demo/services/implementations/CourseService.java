@@ -642,47 +642,4 @@ public class CourseService implements InterfaceCourseService {
             .flatMap(user -> courseRepository.countByUserId(user.getId()));
     }
 
-
-    public String standarizeModality(String modality) {
-
-        if (modality == null || modality.isEmpty()) {
-            return "none";
-        }
-        
-        String modalityLower = modality.trim().toLowerCase();
-        
-        if (modalityLower.matches(".*(hibrid|blended|mixt|semipresencial|presencial con sesiones remotas|presencial - sesiones remotas|presencial y virtual).*")) {
-            return "hibrido";
-        }
-        
-        if (modalityLower.matches(".*(presencial|asistencia personal|campus ternera|edad mínima).*")) {
-            return "presencial";
-        }
-        
-        if (modalityLower.matches(".*(virtual|online|teams|zoom|webex|remota con sesiones).*")) {
-            return "virtual";
-        }
-        
-        if (modalityLower.matches(".*(distancia|remot|a distancia|último modulo presencial|último fin de semana presencial).*")) {
-            return "a distancia";
-        }
-        
-        return "none";
-    }
-
-    public int standarizeDuration(String duration) {
-        if (duration == null || duration.isEmpty()) {
-            return 40;
-        }
-    
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("(\\d+)\\s*(horas|Horas|HORAS|hrs|Hrs|HRS|h|H)", java.util.regex.Pattern.CASE_INSENSITIVE);
-        java.util.regex.Matcher matcher = pattern.matcher(duration);
-        
-        if (matcher.find()) {
-            String hours = matcher.group(1);
-            return Integer.parseInt(hours);
-        }
-    
-        return 40;
-    }
 }

@@ -75,13 +75,10 @@ public class PredictionService implements InterfacePredictionService {
     private ReviewMapper reviewMapper;
     private UserMapper userMapper;
     private ProfileMapper profileMapper;
-    private CourseService courseService;
-    private CategoryService categoryService;
     private ContentRepository contentRepository;
     private ViewMapper viewMapper;
     private ContentMapper contentMapper;
     private ReactionMapper reactionMapper;
-
     private Instances dataStructure;
     private Classifier classifier;
 
@@ -125,23 +122,19 @@ public class PredictionService implements InterfacePredictionService {
         this.reviewMapper = reviewMapper;
         this.userMapper = userMapper;
         this.profileMapper = profileMapper;
-        this.courseService = courseService;
-        this.categoryService = categoryService;
         this.contentRepository = contentRepository;
         this.viewMapper = viewMapper;
         this.contentMapper = contentMapper;
         this.reactionMapper = reactionMapper;
 
         try {
-            // Cargar el modelo desde el classpath
-            ClassPathResource modelResource = new ClassPathResource("j48modelCourseed.model");
+            ClassPathResource modelResource = new ClassPathResource("ramdomForestInterest.model");
             classifier = (Classifier) weka.core.SerializationHelper.read(modelResource.getInputStream());
 
-            // Cargar el archivo ARFF desde el classpath
-            // ClassPathResource arffResource = new ClassPathResource("CourseedUsers.user_course_dataset.arff");
-            // DataSource source = new DataSource(arffResource.getInputStream());
-            // dataStructure = source.getDataSet();
-            // dataStructure.setClassIndex(dataStructure.numAttributes() - 1);
+            ClassPathResource arffResource = new ClassPathResource("courseedStructuredInterest.dataset.arff");
+            DataSource source = new DataSource(arffResource.getInputStream());
+            dataStructure = source.getDataSet();
+            dataStructure.setClassIndex(dataStructure.numAttributes() - 1);
         } catch (Exception e) {
             throw new RuntimeException("Error al cargar los recursos necesarios para PredictionService", e);
         }   
@@ -156,23 +149,12 @@ public class PredictionService implements InterfacePredictionService {
                             .flatMap(userCourseRecomended -> userInterestRepository.findByUserProfileId(profile.getId())
                                 .flatMap(userInterest -> categoryRepository.findById(userInterest.getCategoryId())
                                     .flatMap(interest -> {
-                                        Instance instance = new DenseInstance(16);
+                                        Instance instance = new DenseInstance(5);
                                         instance.setDataset(dataStructure);
-                                        instance.setValue(0, profile.getId());
-                                        instance.setValue(1, interest.getName());
-                                        instance.setValue(2, profile.getAvailableHoursTime());
-                                        instance.setValue(3, profile.getBudget());
-                                        instance.setValue(4, profile.getPlatformPrefered());
-                                        instance.setValue(5, courseId);
-                                        instance.setValue(6, institution.getName());
-                                        instance.setValue(7, course.getModality());
-                                        instance.setValue(8, userCourseRecomended.getCourseHours());
-                                        instance.setValue(9, course.getPrice() == null ? 0 : course.getPrice());
-                                        instance.setValue(10, category.getName());
-                                        instance.setValue(11, userCourseRecomended.getRatingAvg());
-                                        instance.setValue(12, userCourseRecomended.getMaxReaction());
-                                        instance.setValue(13, userCourseRecomended.getTotalViews());
-                                        instance.setValue(14, userCourseRecomended.getReviewsCount());
+                                        instance.setValue(0, profile.getInterest());
+                                        instance.setValue(1, profile.getPlatformPrefered());
+                                        instance.setValue(2, course.getModality());
+                                        instance.setValue(3, category.getName());
         
                                         double predictionValue;
                                         try {
@@ -209,26 +191,13 @@ public class PredictionService implements InterfacePredictionService {
 
     public Mono<RecomendeCourseDto> predictCourseRecommendation(FormPredictionDto formData) {
         try {
-            // Crear la instancia para la predicción
-            Instance instance = new DenseInstance(16);
+            Instance instance = new DenseInstance(5);
             instance.setDataset(dataStructure);
             
-            // Asignar los valores desde el DTO a la instancia
-            instance.setValue(0, formData.getUser_profileId());
-            instance.setValue(1, formData.getUser_interest());
-            instance.setValue(2, formData.getUser_availableTime());
-            instance.setValue(3, formData.getBudget());
-            instance.setValue(4, formData.getPlatform_preference());
-            instance.setValue(5, formData.getCourse_id());
-            instance.setValue(6, formData.getCourse_institution());
-            instance.setValue(7, formData.getCourse_modality());
-            instance.setValue(8, formData.getCourse_duration());
-            instance.setValue(9, formData.getCourse_price());
-            instance.setValue(10, formData.getCourse_category());
-            instance.setValue(11, formData.getCourse_rating_avg());
-            instance.setValue(12, formData.getCourse_max_reaction());
-            instance.setValue(13, formData.getCourse_visits());
-            instance.setValue(14, formData.getCourse_reviews_count());
+            instance.setValue(0, formData.getUser_interest());
+            instance.setValue(1, formData.getPlatform_preference());
+            instance.setValue(2, formData.getCourse_modality());
+            instance.setValue(3, formData.getCourse_category());
 
             double predictionValue = classifier.classifyInstance(instance);
             String prediction = dataStructure.classAttribute().value((int) predictionValue);            
@@ -265,23 +234,12 @@ public class PredictionService implements InterfacePredictionService {
                             return categoryRepository.findById(course.getCategoryId())
                                 .flatMap(category -> institutionRepository.findById(course.getInstitutionId())
                                     .flatMap(institution -> {
-                                        Instance instance = new DenseInstance(16);
+                                        Instance instance = new DenseInstance(5);
                                         instance.setDataset(dataStructure);
-                                        instance.setValue(0, profile.getId());
-                                        instance.setValue(1, insterest.getName());
-                                        instance.setValue(2, profile.getAvailableHoursTime());
-                                        instance.setValue(3, profile.getBudget());
-                                        instance.setValue(4, profile.getPlatformPrefered());
-                                        instance.setValue(5, course.getId());
-                                        instance.setValue(6, institution.getName());
-                                        instance.setValue(7, course.getModality() == null ? "Semipresencial" : course.getModality());
-                                        instance.setValue(8, userCourseRecomended.getCourseHours());
-                                        instance.setValue(9, course.getPrice() == null ? 0 : course.getPrice());
-                                        instance.setValue(10, category.getName());
-                                        instance.setValue(11, userCourseRecomended.getRatingAvg());
-                                        instance.setValue(12, userCourseRecomended.getMaxReaction());
-                                        instance.setValue(13, userCourseRecomended.getTotalViews());
-                                        instance.setValue(14, userCourseRecomended.getReviewsCount());
+                                        instance.setValue(0, profile.getInterest());
+                                        instance.setValue(1, profile.getPlatformPrefered());
+                                        instance.setValue(2, course.getModality());
+                                        instance.setValue(3, category.getName());
         
                                         try {
                                             double predictionValue = classifier.classifyInstance(instance);
@@ -344,26 +302,14 @@ public class PredictionService implements InterfacePredictionService {
                             
                             return Mono.zip(ratingAvgMono, maxReactionMono, viewsCountMono, reviewsCountMono)
                                 .flatMap(tuple -> {
-                                    Double ratingAvg = tuple.getT1();
-                                    String maxReaction = tuple.getT2();
-                                    Long viewsCount = tuple.getT3();
-                                    Long reviewsCount = tuple.getT4();
                                     
                                     try {
-                                        Instance instance = new DenseInstance(13);
+                                        Instance instance = new DenseInstance(5);
                                         instance.setDataset(dataStructure);
                                         instance.setValue(0, profile.getInterest());
-                                        instance.setValue(1, profile.getAvailableHoursTime());
-                                        instance.setValue(2, profile.getBudget());
-                                        instance.setValue(3, courseService.standarizeModality(profile.getPlatformPrefered()));
-                                        instance.setValue(4, courseService.standarizeModality(course.getModality()));
-                                        instance.setValue(5, courseService.standarizeDuration(course.getDuration()));
-                                        instance.setValue(6, course.getPrice() == null ? 0 : course.getPrice());
-                                        instance.setValue(7, categoryService.standarizeCategory(category.getName()));
-                                        instance.setValue(8, ratingAvg);
-                                        instance.setValue(9, maxReaction);
-                                        instance.setValue(10, viewsCount.intValue());
-                                        instance.setValue(11, reviewsCount.intValue());
+                                        instance.setValue(1, profile.getPlatformPrefered());
+                                        instance.setValue(2, course.getModality());
+                                        instance.setValue(3, category.getName());
 
                                         double predictionValue = classifier.classifyInstance(instance);
                                         String prediction = dataStructure.classAttribute().value((int) predictionValue);
@@ -411,26 +357,14 @@ public class PredictionService implements InterfacePredictionService {
                                 
                                 return Mono.zip(ratingAvgMono, maxReactionMono, viewsCountMono, reviewsCountMono, reviewFlux.collectList())
                                     .flatMap(tuple -> {
-                                        Double ratingAvg = tuple.getT1();
-                                        String maxReaction = tuple.getT2();
-                                        Long viewsCount = tuple.getT3();
-                                        Long reviewsCount = tuple.getT4();
                                         
                                         try {
-                                            Instance instance = new DenseInstance(13);
+                                            Instance instance = new DenseInstance(5);
                                             instance.setDataset(dataStructure);
                                             instance.setValue(0, profile.getInterest());
-                                            instance.setValue(1, profile.getAvailableHoursTime());
-                                            instance.setValue(2, profile.getBudget());
-                                            instance.setValue(3, courseService.standarizeModality(profile.getPlatformPrefered()));
-                                            instance.setValue(4, courseService.standarizeModality(course.getModality()));
-                                            instance.setValue(5, courseService.standarizeDuration(course.getDuration()));
-                                            instance.setValue(6, course.getPrice() == null ? 0 : course.getPrice());
-                                            instance.setValue(7, categoryService.standarizeCategory(category.getName()));
-                                            instance.setValue(8, ratingAvg);
-                                            instance.setValue(9, maxReaction);
-                                            instance.setValue(10, viewsCount.intValue());
-                                            instance.setValue(11, reviewsCount.intValue());
+                                            instance.setValue(1, profile.getPlatformPrefered());
+                                            instance.setValue(2, course.getModality());
+                                            instance.setValue(3, category.getName());
 
                                             double predictionValue = classifier.classifyInstance(instance);
                                             String prediction = dataStructure.classAttribute().value((int) predictionValue);
@@ -506,7 +440,7 @@ public class PredictionService implements InterfacePredictionService {
                         .next()
                         .flatMap(view -> courseRepository.findById(view.getCourseId())
                             .flatMap(course -> categoryRepository.findById(course.getCategoryId())
-                                .map(category -> categoryService.standarizeCategory(category.getName()))
+                                .map(category -> category.getName())
                             )
                         )
                         .defaultIfEmpty(profile.getInterest());
@@ -515,9 +449,9 @@ public class PredictionService implements InterfacePredictionService {
                         .take(1)
                         .next()
                         .flatMap(view -> courseRepository.findById(view.getCourseId())
-                            .map(course -> courseService.standarizeModality(course.getModality()))
+                            .map(course -> course.getModality())
                         )
-                        .defaultIfEmpty(courseService.standarizeModality(profile.getPlatformPrefered()));
+                        .defaultIfEmpty(profile.getPlatformPrefered());
                     
                     return lastViewedCategorySortMono.flatMapMany(lastViewedCategory -> lastViewedModalitySortMono
                         .flatMapMany(lastViewedModality -> courseRepository.findAll()
@@ -542,27 +476,14 @@ public class PredictionService implements InterfacePredictionService {
                                         
                                         return Mono.zip(ratingAvgMono, maxReactionMono, viewsCountMono, reviewsCountMono, reviewFlux.collectList())
                                             .flatMap(tuple -> {
-                                                Double ratingAvg = tuple.getT1();
-                                                String maxReaction = tuple.getT2();
-                                                Long viewsCount = tuple.getT3();
-                                                Long reviewsCount = tuple.getT4();
                                                 
                                                 try {
                                                     Instance instance = new DenseInstance(13);
                                                     instance.setDataset(dataStructure);
-                                                    // Usar la categoría del último curso visto en lugar del interés del perfil
                                                     instance.setValue(0, lastViewedCategory);
-                                                    instance.setValue(1, profile.getAvailableHoursTime());
-                                                    instance.setValue(2, profile.getBudget());
-                                                    instance.setValue(3, lastViewedModality);
-                                                    instance.setValue(4, courseService.standarizeModality(course.getModality()));
-                                                    instance.setValue(5, courseService.standarizeDuration(course.getDuration()));
-                                                    instance.setValue(6, course.getPrice() == null ? 0 : course.getPrice());
-                                                    instance.setValue(7, categoryService.standarizeCategory(category.getName()));
-                                                    instance.setValue(8, ratingAvg);
-                                                    instance.setValue(9, maxReaction);
-                                                    instance.setValue(10, viewsCount.intValue());
-                                                    instance.setValue(11, reviewsCount.intValue());
+                                                    instance.setValue(1, lastViewedModality);
+                                                    instance.setValue(2, course.getModality());
+                                                    instance.setValue(3, category.getName());
 
                                                     double predictionValue = classifier.classifyInstance(instance);
                                                     String prediction = dataStructure.classAttribute().value((int) predictionValue);
@@ -654,26 +575,14 @@ public class PredictionService implements InterfacePredictionService {
 
                                 return Mono.zip(ratingAvgMono, maxReactionMono, viewsCountMono, reviewsCountMono, reviewFlux.collectList())
                                     .flatMap(tuple -> {
-                                        Double ratingAvg = tuple.getT1();
-                                        String maxReaction = tuple.getT2();
-                                        Long viewsCount = tuple.getT3();
-                                        Long reviewsCount = tuple.getT4();
                                         
                                         try {
                                             Instance instance = new DenseInstance(13);
                                             instance.setDataset(dataStructure);
                                             instance.setValue(0, profile.getInterest());
-                                            instance.setValue(1, profile.getAvailableHoursTime());
-                                            instance.setValue(2, profile.getBudget());
-                                            instance.setValue(3, courseService.standarizeModality(profile.getPlatformPreference()));
-                                            instance.setValue(4, courseService.standarizeModality(course.getModality()));
-                                            instance.setValue(5, courseService.standarizeDuration(course.getDuration()));
-                                            instance.setValue(6, course.getPrice() == null ? 0 : course.getPrice());
-                                            instance.setValue(7, categoryService.standarizeCategory(category.getName()));
-                                            instance.setValue(8, ratingAvg);
-                                            instance.setValue(9, maxReaction);
-                                            instance.setValue(10, viewsCount.intValue());
-                                            instance.setValue(11, reviewsCount.intValue());
+                                            instance.setValue(1, profile.getPlatformPrefered());
+                                            instance.setValue(2, course.getModality());
+                                            instance.setValue(3, category.getName());
 
                                             double predictionValue = classifier.classifyInstance(instance);
                                             String prediction = dataStructure.classAttribute().value((int) predictionValue);

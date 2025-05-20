@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.http.codec.multipart.FormFieldPart;
 import org.springframework.http.codec.multipart.Part;
@@ -25,9 +24,6 @@ public class CourseController {
 
     @Autowired
     private ValidationService validationService;
-
-    @Value("${spring.webflux.base-path:}")
-    private String basePath;
 
     public Mono<ServerResponse> getAllCourses(ServerRequest serverRequest) {
         return courseService
@@ -147,9 +143,7 @@ public class CourseController {
                     }
                 }
 
-                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost() + 
-                    ((serverRequest.uri().getPort() != -1 ? ":" + serverRequest.uri().getPort() : "") +
-                    (basePath != null && !basePath.isBlank() ? basePath : ""));
+                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost();
 
                 return Mono.just(saveCourseDto)
                     .doOnNext(validationService::validate)
@@ -188,9 +182,7 @@ public class CourseController {
                     }
                 }
 
-                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost() + 
-                    ((serverRequest.uri().getPort() != -1 ? ":" + serverRequest.uri().getPort() : "") +
-                    (basePath != null && !basePath.isBlank() ? basePath : ""));
+                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost();
 
                 return Mono.just(saveCourseDto)
                     .doOnNext(validationService::validate)

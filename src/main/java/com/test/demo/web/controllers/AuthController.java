@@ -1,7 +1,6 @@
 package com.test.demo.web.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -24,9 +23,6 @@ public class AuthController {
 
     @Autowired
     private ValidationService validationService;
-
-    @Value("${spring.webflux.base-path:}")
-    private String basePath;
 
     public Mono<ServerResponse> getAuthUser(ServerRequest serverRequest) {
         return serverRequest.principal()
@@ -99,8 +95,7 @@ public class AuthController {
             .flatMap(parts -> {
                 FilePart imagePart = (FilePart) parts.getFirst("image");
                 
-                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost() + ":" + serverRequest.uri().getPort() +
-                    (basePath != null && !basePath.isBlank() ? basePath : "");
+                String baseUrl = serverRequest.uri().getScheme() + "://" + serverRequest.uri().getHost();
 
                 if (imagePart == null || imagePart.filename() == null || imagePart.filename().isBlank()) {
                     return ServerResponse.badRequest().bodyValue("Para proceder, debes completar el campo correspondiente a la imagen.");

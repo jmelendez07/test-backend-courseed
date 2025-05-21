@@ -23,4 +23,5 @@ public interface InterfaceAuthService {
     Mono<TokenDto> updatePassword(Principal principal, UpdateAuthPasswordDto updateAuthPasswordDto);
     Mono<UserDto> updateProfile(Principal principal, UpdateProfileDto updateProfiledto);
     Mono<UserDto> updloadAvatar(Principal principal, FilePart file, String baseUrl);
+    Mono<TokenDto> getToken(Principal principal);
 }

@@ -304,4 +304,25 @@ public class AuthService implements InterfaceAuthService {
                 ).getWebExchangeBindException()
             ));
     }
+
+    @Override
+    public Mono<TokenDto> getToken(Principal principal) {
+        return userRepository.findByEmail(principal.getName())
+            .flatMap(user -> {
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    user.getEmail(), 
+                    user.getPassword(), 
+                    user.getRoles().stream().map(SimpleGrantedAuthority::new).toList()
+                );
+                return reactiveAuthenticationManager.authenticate(authenticationToken)
+                    .map(auth -> new TokenDto(jwtUtil.create(auth)));
+            })
+            .switchIfEmpty(Mono.error(
+                new CustomWebExchangeBindException(
+                    principal, 
+                    "auth", 
+                    "El correo electrónico o la contraseña proporcionados son incorrectos. Por favor, verifica tus credenciales e intenta nuevamente."
+                ).getWebExchangeBindException())
+            );
+    }
 }

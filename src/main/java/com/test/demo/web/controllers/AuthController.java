@@ -112,6 +112,14 @@ public class AuthController {
                     );
             });
     }
+
+    public Mono<ServerResponse> getToken(ServerRequest serverRequest) {
+        return serverRequest.principal()
+            .flatMap(principal -> authService.getToken(principal)
+                .flatMap(tokenDto -> ServerResponse.ok().bodyValue(tokenDto))
+                .switchIfEmpty(ServerResponse.notFound().build())
+            );
+    }
     
     public boolean isValidImage(FilePart image) {
         if (image == null) {

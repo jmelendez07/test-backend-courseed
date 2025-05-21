@@ -58,6 +58,7 @@ public class RouterConfig {
         return RouterFunctions
             .route()
             .GET(authController::getAuthUser)
+            .GET("/token", authController::getToken)
             .POST("/login", authController::login)
             .POST("/register", authController::register)
             .POST("/register/subscriptor", authController::registerSubscriptor)

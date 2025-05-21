@@ -14,10 +14,12 @@ import org.springframework.stereotype.Service;
 import com.test.demo.persistence.documents.Category;
 import com.test.demo.persistence.documents.Institution;
 import com.test.demo.persistence.documents.Reaction;
+import com.test.demo.persistence.documents.Review;
 import com.test.demo.persistence.repositories.CategoryRepository;
 import com.test.demo.persistence.repositories.CourseRepository;
 import com.test.demo.persistence.repositories.InstitutionRepository;
 import com.test.demo.persistence.repositories.ReactionRepository;
+import com.test.demo.persistence.repositories.ReviewRepository;
 import com.test.demo.persistence.repositories.UserRepository;
 import com.test.demo.projections.dtos.CourseDto;
 import com.test.demo.projections.dtos.ReactionDto;
@@ -27,6 +29,7 @@ import com.test.demo.projections.mappers.CategoryMapper;
 import com.test.demo.projections.mappers.CourseMapper;
 import com.test.demo.projections.mappers.InstitutionMapper;
 import com.test.demo.projections.mappers.ReactionMapper;
+import com.test.demo.projections.mappers.ReviewMapper;
 import com.test.demo.projections.mappers.UserMapper;
 import com.test.demo.services.interfaces.InterfaceReactionService;
 import com.test.demo.web.exceptions.CustomWebExchangeBindException;
@@ -56,6 +59,9 @@ public class ReactionService implements InterfaceReactionService {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
     private CourseMapper courseMapper;
 
     @Autowired
@@ -66,6 +72,9 @@ public class ReactionService implements InterfaceReactionService {
 
     @Autowired
     private CategoryMapper categoryMapper;
+
+    @Autowired
+    private ReviewMapper reviewMapper;
 
     @Override
     public Mono<Page<ReactionDto>> findReactionsByCourseId(String courseId, int page, int size) {
@@ -206,12 +215,17 @@ public class ReactionService implements InterfaceReactionService {
                         .flatMap(course -> {
                             Mono<Category> categoryMono = categoryRepository.findById(course.getCategoryId());
                             Mono<Institution> institutionMono = institutionRepository.findById(course.getInstitutionId());
+                            Flux<Review> reviewFlux = reviewRepository.findByCourseId(course.getId());
 
-                            return Mono.zip(categoryMono, institutionMono)
+                            return Mono.zip(categoryMono, institutionMono, reviewFlux.collectList())
                                 .map(tuple -> {
                                     CourseDto courseDto = courseMapper.toCourseDto(course);
                                     courseDto.setCategory(categoryMapper.toCategoryDto(tuple.getT1()));
                                     courseDto.setInstitution(institutionMapper.toInstitutionDto(tuple.getT2()));
+                                    courseDto.setReviews(tuple.getT3().stream()
+                                        .map(reviewMapper::toReviewDto)
+                                        .toList()
+                                    );
 
                                     return courseDto;
                                 });

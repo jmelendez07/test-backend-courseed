@@ -339,6 +339,7 @@ public class PredictionService implements InterfacePredictionService {
                 .flatMap(course -> categoryRepository.findById(course.getCategoryId())
                     .flatMap(category -> institutionRepository.findById(course.getInstitutionId())
                         .flatMap(institution -> {
+                            System.out.println("Course ID: " + course.getId());
 
                             Mono<Double> ratingAvgMono = reviewRepository.getAverageRatingByCourseId(course.getId())
                                 .defaultIfEmpty(0.0);

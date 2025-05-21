@@ -314,6 +314,7 @@ public class AuthService implements InterfaceAuthService {
                     user.getPassword(), 
                     user.getRoles().stream().map(SimpleGrantedAuthority::new).toList()
                 );
+                System.out.println("Token: " + authenticationToken);
                 return reactiveAuthenticationManager.authenticate(authenticationToken)
                     .map(auth -> new TokenDto(jwtUtil.create(auth)));
             })

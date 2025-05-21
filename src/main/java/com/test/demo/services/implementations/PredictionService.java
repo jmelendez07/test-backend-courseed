@@ -335,12 +335,10 @@ public class PredictionService implements InterfacePredictionService {
 
     return userRepository.findByEmail(principal.getName())
         .flatMap(user -> profileRepository.findByUserId(user.getId())
-            .flatMapMany(profile -> courseRepository.findAll()
+            .flatMap(profile -> courseRepository.findAll()
                 .flatMap(course -> categoryRepository.findById(course.getCategoryId())
                     .flatMap(category -> institutionRepository.findById(course.getInstitutionId())
                         .flatMap(institution -> {
-                            System.out.println("Course ID: " + course.getId());
-
                             Mono<Double> ratingAvgMono = reviewRepository.getAverageRatingByCourseId(course.getId())
                                 .defaultIfEmpty(0.0);
 
@@ -388,7 +386,7 @@ public class PredictionService implements InterfacePredictionService {
                                             predictionDto.setCourseMaxReaction(tuple.getT2());
                                             predictionDto.setCourseVisits(tuple.getT3().intValue());
                                             predictionDto.setCourseReviewsCount(tuple.getT4().intValue());
-                                            predictionDto.setCourseRecomended(true);
+                                            predictionDto.setCourseRecomended(prediction.equals("true"));
                                             predictionDto.setConfidence(confidencePercentage);
 
                                             CourseDto courseDto = courseMapper.toCourseDto(course);
@@ -412,14 +410,14 @@ public class PredictionService implements InterfacePredictionService {
                         })
                     )
                 )
+                .filter(c -> c != null)
+                .take(size) // <-- Solo toma los primeros 'size' recomendados
+                .collectList()
+                .flatMap(courses -> {
+                    Page<CourseDto> pageResult = new PageImpl<>(courses, pageable, courses.size());
+                    return Mono.just(pageResult);
+                })
             )
-            .skip((long) page * size)
-            .take(size)
-            .collectList()
-            .flatMap(recommendedCourses -> {
-                Page<CourseDto> pageResult = new PageImpl<>(recommendedCourses, pageable, recommendedCourses.size());
-                return Mono.just(pageResult);
-            })
         )
         .defaultIfEmpty(new PageImpl<>(List.of(), pageable, 0));
     }

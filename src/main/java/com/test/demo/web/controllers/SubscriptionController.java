@@ -114,6 +114,19 @@ public class SubscriptionController {
         }
     }
 
+    public Mono<ServerResponse> verify(ServerRequest serverRequest) {
+        return serverRequest.principal()
+            .flatMap(principal -> subscriptionService.verify(principal))
+                .flatMap(isSubscriber -> {
+                    if (isSubscriber) {
+                        return ServerResponse.ok().bodyValue(isSubscriber);
+                    } else {
+                        return ServerResponse.notFound().build();
+                    }
+                })
+                .switchIfEmpty(ServerResponse.notFound().build());   
+    }
+
     private String generateMd5Signature(String referenceCode, String amount, String currency, String statePol) {
     try {
         String formattedAmount = String.format(Locale.US, "%.1f", Double.parseDouble(amount));

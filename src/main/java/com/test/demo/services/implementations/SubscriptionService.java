@@ -105,5 +105,12 @@ public class SubscriptionService implements InterfaceSubscriptionService {
                 ).getWebExchangeBindException()
             ));
     }
+
+    public Mono<Boolean> verify(Principal principal) {
+        return userRepository.findByEmail(principal.getName())
+            .flatMap(user -> subscriptionRepository.countByUserId(user.getId())
+                .map(count -> count > 0)
+            );
+    }
     
 }

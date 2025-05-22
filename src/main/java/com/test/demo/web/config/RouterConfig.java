@@ -204,6 +204,7 @@ public class RouterConfig {
         return RouterFunctions
             .route()
             .GET("/auth", subscriptionController::findByAuthUser)
+            .GET("/verify", subscriptionController::verify)
             .POST("/confirm", subscriptionController::confirm)
             .build();
     }

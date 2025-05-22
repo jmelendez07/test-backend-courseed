@@ -284,7 +284,8 @@ public class PredictionService implements InterfacePredictionService {
     public Mono<Integer> getTotalCoursesRecomended(Principal principal) {
         return userRepository.findByEmail(principal.getName())
             .flatMap(user -> profileRepository.findByUserId(user.getId())
-                .flatMap(profile -> courseRepository.findAll()
+                .flatMap(profile -> categoryRepository.findByName(profile.getInterest()) 
+                    .flatMap(categoryProfile -> courseRepository.findAll()
                     .flatMap(course -> categoryRepository.findById(course.getCategoryId())
                         .flatMap(category -> {
                             Mono<Double> ratingAvgMono = reviewRepository.getAverageRatingByCourseId(course.getId())
@@ -323,9 +324,8 @@ public class PredictionService implements InterfacePredictionService {
                         })
                         .defaultIfEmpty(0)
                     )
-                    .reduce(0, Integer::sum)
+                    .reduce(0, Integer::sum))
                 )
-            
             )
             .defaultIfEmpty(0);
     }
@@ -346,7 +346,8 @@ public class PredictionService implements InterfacePredictionService {
         com.test.demo.persistence.documents.Profile profile, int page, int pageSize, int remaining) {
         Pageable pageable = PageRequest.of(page, pageSize);
 
-        return courseRepository.findAllBy(pageable)
+        return categoryRepository.findByName(profile.getInterest())
+            .flatMap(categoryProfile -> courseRepository.findByCategoryId(categoryProfile.getId(), pageable)
             .collectList()
             .flatMap(courses -> {
                 if (courses.isEmpty() || remaining <= 0) {
@@ -436,7 +437,8 @@ public class PredictionService implements InterfacePredictionService {
                                 });
                         }
                     });
-            });
+            })
+        );
     }
 
     public Mono<Page<CourseDto>> getRecomendedCoursesByHistoryAndAuth(Principal principal, int page, int size) {
@@ -483,7 +485,8 @@ public class PredictionService implements InterfacePredictionService {
 
         Pageable pageable = PageRequest.of(page, pageSize);
 
-        return courseRepository.findAllBy(pageable)
+        return categoryRepository.findByName(lastViewedCategory)
+            .flatMap(categoryProfile -> courseRepository.findAllBy(pageable)
             .collectList()
             .flatMap(courses -> {
                 if (courses.isEmpty() || remaining <= 0) {
@@ -573,7 +576,9 @@ public class PredictionService implements InterfacePredictionService {
                                 });
                         }
                     });
-            });
+            })
+            
+        );
     }
 
     public Mono<Page<UserDto>> getRecomendedUsersByCourse(String courseId, int page, int size) {

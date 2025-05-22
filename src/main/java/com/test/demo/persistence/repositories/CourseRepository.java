@@ -41,6 +41,7 @@ public interface CourseRepository extends ReactiveMongoRepository<Course, String
     );
     @Query("{ '$or': [ { 'title': { '$regex': ?0, '$options': 'i' } }, { 'description': { '$regex': ?0, '$options': 'i' } }, { 'duration': { '$regex': ?0, '$options': 'i' } } ] }")
     Flux<Course> searchCourses(String text, Pageable pageable);
+    Flux<Course> findByCategoryId(String categoryId);
     Flux<Course> findByCategoryId(String categoryId, Pageable pageable);
     Flux<Course> findByInstitutionId(String institutionId, Pageable pageable);
     Flux<Course> findByType(String type, Pageable pageable);

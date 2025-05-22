@@ -285,7 +285,7 @@ public class PredictionService implements InterfacePredictionService {
         return userRepository.findByEmail(principal.getName())
             .flatMap(user -> profileRepository.findByUserId(user.getId())
                 .flatMap(profile -> categoryRepository.findByName(profile.getInterest()) 
-                    .flatMap(categoryProfile -> courseRepository.findAll()
+                    .flatMap(categoryProfile -> courseRepository.findByCategoryId(categoryProfile.getId())
                     .flatMap(course -> categoryRepository.findById(course.getCategoryId())
                         .flatMap(category -> {
                             Mono<Double> ratingAvgMono = reviewRepository.getAverageRatingByCourseId(course.getId())
@@ -486,7 +486,7 @@ public class PredictionService implements InterfacePredictionService {
         Pageable pageable = PageRequest.of(page, pageSize);
 
         return categoryRepository.findByName(lastViewedCategory)
-            .flatMap(categoryProfile -> courseRepository.findAllBy(pageable)
+            .flatMap(categoryProfile -> courseRepository.findByCategoryId(categoryProfile.getId(), pageable)
             .collectList()
             .flatMap(courses -> {
                 if (courses.isEmpty() || remaining <= 0) {
